@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core" xmlns:b="http://bootsfaces.net/ui">
+<h:head>
+    <title>Laboratorio 26 · Contactos corporativos UTP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <h:outputStylesheet library="css" name="laboratorio.css"/>
+</h:head>
+<h:body>
+    <header class="topbar"><div class="container"><strong class="brand">UTP<span>LAB</span></strong><span>Desarrollo Web Integrado · Semana 13</span></div></header>
+    <b:container>
+        <section class="hero"><p class="eyebrow">FICHA DE LABORATORIO N.º 26 / SESIÓN 26</p><h1>Componentes BootsFaces y Ajax</h1><p>Interfaces responsivas. Datos persistentes. Interacciones sin recargar.</p><span class="pill">Jakarta Faces 4</span><span class="pill">BootsFaces 2.0.1</span><span class="pill">MySQL</span></section>
+        <b:panelGrid colSpans="6,6" size="sm">
+            <b:panel title="01 · Panel informativo" look="info" showCollapseLink="true">
+                <p>Este panel contextual se puede plegar y expandir desde su encabezado.</p>
+                <f:facet name="footer"><h:outputText value="Contenedores, filas, columnas y facetas de pie de página."/></f:facet>
+            </b:panel>
+            <b:panel title="Panel de alerta / advertencia" look="warning" showCollapseLink="false"><p>Revise los parámetros del sistema. Los campos del registro son obligatorios y cada correo debe ser único.</p></b:panel>
+        </b:panelGrid>
+        <h:form id="demo">
+            <b:row><b:column colMd="6">
+                <b:panel title="02 · Formulario asíncrono Ajax" look="primary">
+                    <b:inputText id="nombre" value="#{bean.nombre}" label="Ingrese su nombre:" placeholder="Escriba aquí..." maxlength="100">
+                        <f:ajax event="keyup" execute="@this" render="panelResultado" delay="250"/>
+                    </b:inputText>
+                </b:panel>
+            </b:column><b:column colMd="6">
+                <b:panel id="panelResultado" title="Resultado en tiempo real" look="success"><div aria-live="polite"><h:outputText value="#{empty bean.nombre ? 'Escriba su nombre para ver el saludo.' : 'Hola, '.concat(bean.nombre).concat('. Actualizado vía Ajax sin recarga.')}"/></div></b:panel>
+            </b:column></b:row>
+        </h:form>
+        <section class="section-heading"><p class="eyebrow">03 / RETO PRÁCTICO</p><h2>Directorio corporativo</h2><p>Registre los datos de un contacto y consulte los últimos 100 registros guardados.</p></section>
+        <h:form id="registro">
+            <b:panel title="Nuevo contacto" look="primary" showCollapseLink="false">
+                <b:row>
+                    <b:column colMd="4"><b:inputText id="contactoNombre" label="Nombre completo" value="#{bean.contactoNombre}" placeholder="Ej. Ana Torres" required="true" requiredMessage="Ingrese el nombre del contacto." maxlength="100" validatorMessage="El nombre debe contener entre 2 y 100 caracteres y no estar vacío."><f:validateRegex pattern="(?s)(?=.{2,100}$).*\S.*"/></b:inputText><h:message for="contactoNombre" styleClass="field-error"/></b:column>
+                    <b:column colMd="4"><b:inputText id="correo" label="Correo corporativo" value="#{bean.correo}" placeholder="ana@empresa.com" required="true" requiredMessage="Ingrese el correo." maxlength="150" validatorMessage="Ingrese un correo válido, por ejemplo ana@empresa.com."><f:validateRegex pattern="[^\s@]+@[^\s@]+\.[^\s@]+"/></b:inputText><h:message for="correo" styleClass="field-error"/></b:column>
+                    <b:column colMd="4"><b:inputText id="telefono" label="Teléfono" value="#{bean.telefono}" placeholder="+51 987 654 321" required="true" requiredMessage="Ingrese el teléfono." maxlength="25" validatorMessage="El teléfono debe tener entre 7 y 15 dígitos; puede incluir +, espacios, guiones y paréntesis."><f:validateRegex pattern="(?=(?:\D*\d){7,15}\D*$)\+?[0-9 ()-]{7,25}"/></b:inputText><h:message for="telefono" styleClass="field-error"/></b:column>
+                </b:row>
+                <h:commandButton id="guardar" value="Guardar contacto" action="#{bean.guardar}" styleClass="btn btn-primary"><f:ajax execute="@form" render="@form" onevent="registroAjax"/></h:commandButton>
+                <span id="estadoEnvio" class="save-hint" role="status">Guardado asíncrono en MySQL</span>
+            </b:panel>
+            <h:messages id="mensajes" globalOnly="true" styleClass="global-errors"/>
+            <b:panel id="confirmacion" title="Resultado del registro" look="success" showCollapseLink="false"><div aria-live="polite"><h:outputText value="#{empty bean.resultado ? 'Complete los datos y pulse Guardar contacto.' : bean.resultado}"/></div></b:panel>
+            <b:panel id="directorio" title="Contactos registrados" look="default" showCollapseLink="false">
+                <h:panelGroup rendered="#{empty bean.contactos}" layout="block" styleClass="empty-state">Todavía no hay contactos para mostrar.</h:panelGroup>
+                <div class="table-responsive"><h:dataTable value="#{bean.contactos}" var="contacto" styleClass="table table-striped table-hover" rendered="#{not empty bean.contactos}">
+                    <h:column><f:facet name="header">ID</f:facet><h:outputText value="#{contacto.id}"/></h:column>
+                    <h:column><f:facet name="header">Nombre</f:facet><h:outputText value="#{contacto.nombre}"/></h:column>
+                    <h:column><f:facet name="header">Correo</f:facet><h:outputText value="#{contacto.correo}"/></h:column>
+                    <h:column><f:facet name="header">Teléfono</f:facet><h:outputText value="#{contacto.telefono}"/></h:column>
+                </h:dataTable></div>
+            </b:panel>
+        </h:form>
+        <b:panel title="04 · Cuestionario de autoevaluación resuelto" look="info" showCollapseLink="true">
+            <h3>¿Qué atributo habilita BootsFaces?</h3><p><code>xmlns:b="http://bootsfaces.net/ui"</code> en la etiqueta raíz <code>html</code>. El nombre correcto de la biblioteca incluye la letra «s».</p>
+            <h3>¿Para qué sirve el atributo look?</h3><p>Define el estilo contextual del panel, como primary, info, warning o success, para expresar visualmente su propósito.</p>
+            <h3>¿Qué ventaja arquitectónica ofrece Ajax?</h3><p>Envía solicitudes asíncronas y actualiza solo los componentes seleccionados. Evita reconstruir y descargar toda la página, reduce el tráfico y conserva el contexto visual. En JSF, execute indica qué componentes se procesan y render cuáles se actualizan.</p>
+        </b:panel>
+        <footer>Universidad Tecnológica del Perú · Laboratorio 26 · Modalidad virtual / presencial</footer>
+    </b:container>
+    <h:outputScript library="js" name="laboratorio.js" target="body"/>
+</h:body>
+</html>
